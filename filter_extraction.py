@@ -17,7 +17,9 @@ Always return ONLY a valid JSON object with these exact keys:
   "price_max": float | null,
   "sort_by": "price" | "rating" | null,
   "features": list of strings | null,
-  "products": list of strings | null
+  "products": list of strings | null,
+  "intent": "gifting" | "personal use" | "work" | "gaming" | "budget shopping" | "luxury shopping" | null,
+  "tone": "casual" | "enthusiastic" | "professional" | "fun" | null
 }
 
 Instructions:
@@ -26,9 +28,11 @@ Instructions:
 - If user says "highest rated", set sort_by = "rating".
 - If user says "show me more" or "more like this", set action = "refine".
 - If they say "compare this with Lumsburry", set action = "compare" and products = ["this", "lumsburry"].
-- Always extract product names from the query into the "products" list if possible.
+- Always extract product names into the "products" list if possible.
+- Try to infer the intent (e.g., gifting, gaming, personal use, work).
+- Try to infer the tone (e.g., casual, enthusiastic, professional) based on how they express themselves.
 - Use "null" if unsure about any field.
-- Do not output any explanation or markdown. Just JSON.
+- Do not output any explanation or markdown. Just valid JSON.
 """
 
 def extract_filters(user_query: str, context: str = "") -> dict:
@@ -50,7 +54,10 @@ def extract_filters(user_query: str, context: str = "") -> dict:
 
         parsed = json.loads(content)
 
-        required_keys = ["action", "category", "brand", "price_min", "price_max", "sort_by", "features", "products"]
+        required_keys = [
+            "action", "category", "brand", "price_min", "price_max",
+            "sort_by", "features", "products", "intent", "tone"
+        ]
         for key in required_keys:
             if key not in parsed:
                 parsed[key] = None
@@ -68,6 +75,8 @@ def extract_filters(user_query: str, context: str = "") -> dict:
             "sort_by": None,
             "features": None,
             "products": None,
+            "intent": None,
+            "tone": None
         }
 
 # Optional direct test

@@ -7,31 +7,39 @@ client = Mistral(api_key=MISTRAL_API_KEY)
 SYSTEM_PROMPT = """
 You are a friendly, concise shopping assistant.
 
-Given a user's query and a list of real products, generate a short, helpful, natural-language reply that:
+You will receive:
+- The user query
+- The detected shopping intent (e.g., gaming, gifting, personal use)
+- The tone of the user (e.g., professional, casual, enthusiastic)
+- A list of top 1–3 matching products (with title, price, rating)
+- The user action (search | compare | refine | sort)
 
-- Explains what was found or compared
-- Highlights brands, categories, or price/rating filters if mentioned
-- Suggests top picks if possible
-- Encourages follow-ups like “Want to refine this further?”
+Your job is to generate a short, helpful natural-language response that:
+- Is aware of the user's intent and adapts accordingly
+- Matches the tone of the user (e.g., if they are casual, be casual too)
+- Clearly explains what you found or compared
+- Highlights useful details like brand, rating, or value
+- NEVER lists exact product specs — those will be printed separately
+- NEVER make up or hallucinate products
 
-NEVER list product details — that will be displayed separately.
-NEVER hallucinate or mention products you don’t see.
-Keep your reply short and focused.
+Be friendly but brief. Encourage refinement or comparison.
 """
 
-def generate_reply(user_query, products, action):
+def generate_reply(user_query, products, action, intent=None, tone=None):
     try:
         examples = [
             {
                 "title": p.get("title"),
                 "price": p.get("price"),
                 "rating": p.get("rating"),
-            } for p in products[:3]  # Use top 3 for context
+            } for p in products[:3]
         ]
 
         prompt = {
             "query": user_query,
             "action": action,
+            "intent": intent,
+            "tone": tone,
             "products": examples
         }
 
@@ -47,4 +55,4 @@ def generate_reply(user_query, products, action):
 
     except Exception as e:
         print("❌ Reply generation failed:", e)
-        return "Here are the results. Let me know if you'd like to refine them!"
+        return "Here are some product options. Let me know if you'd like to refine them!"
