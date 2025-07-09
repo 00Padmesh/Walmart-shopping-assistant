@@ -27,6 +27,7 @@ Be friendly but brief. Encourage refinement or comparison.
 
 def generate_reply(user_query, products, action, intent=None, tone=None):
     try:
+        # Format top 1–3 products into structured summaries
         examples = [
             {
                 "title": p.get("title"),
@@ -35,14 +36,19 @@ def generate_reply(user_query, products, action, intent=None, tone=None):
             } for p in products[:3]
         ]
 
+        # Assemble prompt dictionary
         prompt = {
             "query": user_query,
             "action": action,
-            "intent": intent,
-            "tone": tone,
             "products": examples
         }
 
+        if intent:
+            prompt["intent"] = intent
+        if tone:
+            prompt["tone"] = tone
+
+        # Generate reply using Mistral
         response = client.chat.complete(
             model=MISTRAL_MODEL,
             messages=[
