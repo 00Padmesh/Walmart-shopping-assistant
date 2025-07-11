@@ -1,4 +1,0 @@
-mistralai
-serpapi
-python-dotenv
-google-search-results
