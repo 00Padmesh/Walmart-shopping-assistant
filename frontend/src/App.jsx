@@ -34,11 +34,9 @@ function App() {
     setLoading(true);
 
     try {
-      console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
-      console.log("Sending:", { message: input, session_id: sessionId ?? "" });
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/chat`, {
+      const res = await axios.post("http://localhost:8000/chat", {
         message: input,
-        session_id: sessionId ?? "",
+        session_id: sessionId,
       });
 
       // Update session ID if received

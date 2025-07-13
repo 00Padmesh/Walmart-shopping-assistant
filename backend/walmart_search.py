@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from serpapi import GoogleSearch
 
 load_dotenv()
-from Backend.config import SERPAPI_KEY
+SERPAPI_KEY = os.getenv("SERPAPI_KEY")
 
 def search_walmart_products(query, filters, max_results=10):
     try:
